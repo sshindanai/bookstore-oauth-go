@@ -71,7 +71,7 @@ func AuthenticateRequest(request *http.Request) *errors.RestErr {
 	cleanRequest(request)
 
 	accessTokenID := strings.TrimSpace(request.URL.Query().Get(paramAccessToken))
-	if accessToken == "" {
+	if accessTokenID == "" {
 		return nil
 	}
 
@@ -98,8 +98,8 @@ func cleanRequest(request *http.Request) {
 	request.Header.Del(headerXCallerID)
 }
 
-func getAccessToken(at string) (*accessToken, *errors.RestErr) {
-	response := oauthRestClient.Get(fmt.Sprintf("/oauth/access_token/%s", at))
+func getAccessToken(accessTokenId string) (*accessToken, *errors.RestErr) {
+	response := oauthRestClient.Get(fmt.Sprintf("/oauth/access_token/%s", accessTokenId))
 	if response == nil || response.Response == nil {
 		return nil, errors.NewNotFoundError("invalid restclient response when trying to get access token")
 	}
