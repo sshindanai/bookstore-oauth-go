@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/mercadolibre/golang-restclient/rest"
-	"github.com/sshindanai/bookstore-oauth-go/oauth/errors"
+	"github.com/sshindanai/bookstore-utils-go/resterrors"
 )
 
 var (
@@ -63,7 +63,7 @@ func IsPublic(request *http.Request) bool {
 	return request.Header.Get(headerXPublic) == "true"
 }
 
-func AuthenticateRequest(request *http.Request) *errors.RestErr {
+func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 	if request == nil {
 		return nil
 	}
@@ -98,23 +98,23 @@ func cleanRequest(request *http.Request) {
 	request.Header.Del(headerXCallerID)
 }
 
-func getAccessToken(accessTokenId string) (*accessToken, *errors.RestErr) {
+func getAccessToken(accessTokenId string) (*accessToken, *resterrors.RestErr) {
 	response := oauthRestClient.Get(fmt.Sprintf("/oauth/access_token/%s", accessTokenId))
 	if response == nil || response.Response == nil {
-		return nil, errors.NewNotFoundError("invalid restclient response when trying to get access token")
+		return nil, resterrors.NewNotFoundError("invalid restclient response when trying to get access token")
 	}
 
 	if response.StatusCode > 299 {
-		var restErr errors.RestErr
+		var restErr resterrors.RestErr
 		if err := json.Unmarshal(response.Bytes(), &restErr); err != nil {
-			return nil, errors.NewNotFoundError("invalid error interface when trying to get access token")
+			return nil, resterrors.NewNotFoundError("invalid error interface when trying to get access token")
 		}
 		return nil, &restErr
 	}
 
 	var token accessToken
 	if err := json.Unmarshal(response.Bytes(), &token); err != nil {
-		return nil, errors.NewNotFoundError("error when trying to unmarshal access token")
+		return nil, resterrors.NewNotFoundError("error when trying to unmarshal access token")
 	}
 	return &token, nil
 }
