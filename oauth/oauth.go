@@ -21,8 +21,8 @@ var (
 
 const (
 	headerXPublic   = "X-Public"
-	headerXClientID = "X-ClientID"
-	headerXCallerID = "X-CallerID"
+	headerXClientID = "X-Client-Id"
+	headerXCallerID = "X-Caller-Id"
 
 	paramAccessToken = "access_token"
 )
