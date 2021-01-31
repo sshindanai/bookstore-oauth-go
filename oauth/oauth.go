@@ -98,8 +98,8 @@ func cleanRequest(request *http.Request) {
 	request.Header.Del(headerXCallerID)
 }
 
-func getAccessToken(accessTokenId string) (*accessToken, *resterrors.RestErr) {
-	response := oauthRestClient.Get(fmt.Sprintf("/oauth/access_token/%s", accessTokenId))
+func getAccessToken(userID string) (*accessToken, *resterrors.RestErr) {
+	response := oauthRestClient.Get(fmt.Sprintf("/oauth/accesstoken/%s", userID))
 	if response == nil || response.Response == nil {
 		return nil, resterrors.NewNotFoundError("invalid restclient response when trying to get access token")
 	}
