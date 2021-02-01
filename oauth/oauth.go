@@ -24,7 +24,7 @@ const (
 	headerXClientID = "X-ClientId"
 	headerXCallerID = "X-CallerId"
 
-	paramAccessToken = "access_token"
+	paramUserID = "userid"
 )
 
 type accessToken struct {
@@ -70,12 +70,12 @@ func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 
 	cleanRequest(request)
 
-	accessTokenID := strings.TrimSpace(request.URL.Query().Get(paramAccessToken))
-	if accessTokenID == "" {
+	userID := strings.TrimSpace(request.URL.Query().Get(paramUserID))
+	if userID == "" {
 		return nil
 	}
 
-	at, err := getAccessToken(accessTokenID)
+	at, err := getAccessToken(userID)
 	if err != nil {
 		if err.Code == http.StatusNotFound {
 			return nil
