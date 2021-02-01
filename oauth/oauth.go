@@ -68,8 +68,6 @@ func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 		return nil
 	}
 
-	cleanRequest(request)
-
 	userID := strings.TrimSpace(request.URL.Query().Get(paramUserID))
 	if userID == "" {
 		return nil
@@ -87,15 +85,6 @@ func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 	request.Header.Add(headerXCallerID, fmt.Sprintf("%v", at.UserID))
 
 	return nil
-}
-
-func cleanRequest(request *http.Request) {
-	if request == nil {
-		return
-	}
-
-	request.Header.Del(headerXClientID)
-	request.Header.Del(headerXCallerID)
 }
 
 func getAccessToken(userID string) (*accessToken, *resterrors.RestErr) {
