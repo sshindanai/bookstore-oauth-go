@@ -63,7 +63,7 @@ func IsPublic(request *http.Request) bool {
 	return request.Header.Get(headerXPublic) == "true"
 }
 
-func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
+func AuthenticateRequest(request *http.Request) resterrors.RestErr {
 	if request == nil {
 		return nil
 	}
@@ -75,7 +75,7 @@ func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 
 	at, err := getAccessToken(userID)
 	if err != nil {
-		if err.Code == http.StatusNotFound {
+		if err.StatusCode() == http.StatusNotFound {
 			return nil
 		}
 		return err
@@ -87,7 +87,7 @@ func AuthenticateRequest(request *http.Request) *resterrors.RestErr {
 	return nil
 }
 
-func getAccessToken(userID string) (*accessToken, *resterrors.RestErr) {
+func getAccessToken(userID string) (*accessToken, resterrors.RestErr) {
 	response := oauthRestClient.Get(fmt.Sprintf("/oauth/accesstoken/%s", userID))
 	if response == nil || response.Response == nil {
 		return nil, resterrors.NewNotFoundError("invalid restclient response when trying to get access token")
@@ -98,7 +98,7 @@ func getAccessToken(userID string) (*accessToken, *resterrors.RestErr) {
 		if err := json.Unmarshal(response.Bytes(), &restErr); err != nil {
 			return nil, resterrors.NewNotFoundError("invalid error interface when trying to get access token")
 		}
-		return nil, &restErr
+		return nil, restErr
 	}
 
 	var token accessToken

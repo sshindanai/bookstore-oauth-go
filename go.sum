@@ -14,6 +14,8 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/sshindanai/bookstore-utils-go v0.1.0 h1:OmlElwgOwRWHH7Gb8cHHUUOqtIcSS+0cfKcee2Mwhh8=
 github.com/sshindanai/bookstore-utils-go v0.1.0/go.mod h1:zDBR9DPaXJTc6tTmzTNjKLj/QKLeQRbBGaQDtJ6UzMg=
 github.com/sshindanai/bookstore-utils-go v0.2.0 h1:mXNtdPSEU8FYCKB74OMq14llyKPJnHThD1zfAcLAy+E=
+github.com/sshindanai/bookstore-utils-go v0.4.0 h1:27SQo2ZFojO5cUhNAG3ZBpvYDZAnJuTgWE2hizqqTDs=
+github.com/sshindanai/bookstore-utils-go v0.4.0/go.mod h1:zDBR9DPaXJTc6tTmzTNjKLj/QKLeQRbBGaQDtJ6UzMg=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
