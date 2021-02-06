@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mercadolibre/golang-restclient/rest"
@@ -31,6 +32,11 @@ type accessToken struct {
 	ID       string `json:"id"`
 	UserID   int64  `json:"user_id"`
 	ClientID int64  `json:"client_id"`
+}
+
+type accessTokenConcurrent struct {
+	Result *accessToken
+	Err    resterrors.RestErr
 }
 
 func ClientID(request *http.Request) int64 {
@@ -73,18 +79,60 @@ func AuthenticateRequest(request *http.Request) resterrors.RestErr {
 		return nil
 	}
 
-	at, err := getAccessToken(userID)
-	if err != nil {
-		if err.StatusCode() == http.StatusNotFound {
+	// at, err := getAccessToken(userID)
+	// if err != nil {
+	// 	if err.StatusCode() == http.StatusNotFound {
+	// 		return nil
+	// 	}
+	// 	return err
+	// }
+
+	output := getAccessTokenConcurrent(userID)
+	result := <-output
+	if result.Err != nil {
+		if result.Err.StatusCode() == http.StatusNotFound {
 			return nil
 		}
-		return err
+		return result.Err
 	}
 
-	request.Header.Add(headerXClientID, fmt.Sprintf("%v", at.ClientID))
-	request.Header.Add(headerXCallerID, fmt.Sprintf("%v", at.UserID))
+	// request.Header.Add(headerXClientID, fmt.Sprintf("%v", at.ClientID))
+	// request.Header.Add(headerXCallerID, fmt.Sprintf("%v", at.UserID))
 
 	return nil
+}
+
+var mu *sync.Mutex
+
+func getAccessTokenConcurrent(userID string) <-chan *accessTokenConcurrent {
+	res := make(chan *accessTokenConcurrent)
+	go func(chan *accessTokenConcurrent) {
+		result := accessTokenConcurrent{}
+		response := oauthRestClient.Get(fmt.Sprintf("/oauth/accesstoken/%s", userID))
+		if response == nil || response.Response == nil {
+			result.Err = resterrors.NewNotFoundError("invalid restclient response when trying to get access token")
+			return
+		}
+
+		if response.StatusCode > 299 {
+			var restErr resterrors.RestErr
+			if err := json.Unmarshal(response.Bytes(), &restErr); err != nil {
+				result.Err = resterrors.NewNotFoundError("invalid error interface when trying to get access token")
+				return
+			}
+			result.Err = restErr
+			return
+		}
+
+		var token accessToken
+		if err := json.Unmarshal(response.Bytes(), &token); err != nil {
+			result.Err = resterrors.NewNotFoundError("error when trying to unmarshal access token")
+			return
+		}
+		result.Result = &token
+		res <- &result
+	}(res)
+	return res
 }
 
 func getAccessToken(userID string) (*accessToken, resterrors.RestErr) {
