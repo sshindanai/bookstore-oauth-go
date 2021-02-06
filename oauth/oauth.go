@@ -107,6 +107,7 @@ var mu *sync.Mutex
 func getAccessTokenConcurrent(userID string) <-chan *accessTokenConcurrent {
 	res := make(chan *accessTokenConcurrent)
 	go func(chan *accessTokenConcurrent) {
+		defer close(res)
 		result := accessTokenConcurrent{}
 		response := oauthRestClient.Get(fmt.Sprintf("/oauth/accesstoken/%s", userID))
 		if response == nil || response.Response == nil {
